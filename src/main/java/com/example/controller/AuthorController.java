@@ -1,5 +1,6 @@
 package com.example.controller;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,10 @@ public class AuthorController {
     public Author createAuthor(@RequestBody Author author){
         return authorService.save(author);
     }
+    @PostMapping("/authors/saveAll")
+    public List<Author> createAuthors(@RequestBody List<Author> authors){
+        return authorService.saveAll(authors);
+    }
 
     @GetMapping("/authors")
     public List<Author> findallAuthors(){
@@ -30,12 +35,12 @@ public class AuthorController {
     }
 
     @GetMapping("/authors/{id}")
-    public Author findAuthorById(@PathVariable Long id){
+    public Optional<Author> findAuthorById(@PathVariable String id){
         return authorService.findById(id);
     }
 
     @DeleteMapping("/authors/{id}")
-    public void deleteAuthorById(@PathVariable Long id){
+    public void deleteAuthorById(@PathVariable String id){
         authorService.deletdeById(id);
     }
 
