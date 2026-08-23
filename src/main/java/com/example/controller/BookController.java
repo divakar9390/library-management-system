@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dto.BookResponseDto;
 import com.example.model.Book;
 import com.example.service.BookService;
 
@@ -16,9 +17,11 @@ import com.example.service.BookService;
 @RestController
 public class BookController {
     public final BookService bookService;
+    private final BookResponseDto bookResponseDto;
 
-    public BookController(BookService bookService) {
+    public BookController(BookService bookService, BookResponseDto bookResponseDto) {
         this.bookService = bookService;
+        this.bookResponseDto = bookResponseDto;
     }
 
     @PostMapping("/books/save")
@@ -35,7 +38,7 @@ public class BookController {
         return bookService.findall();
     }
     @GetMapping("/books/{id}")
-    public Optional<Book> findById(@PathVariable String id){
+    public Optional<BookResponseDto> findById(@PathVariable String id){
         return bookService.findById(id);
     }
 

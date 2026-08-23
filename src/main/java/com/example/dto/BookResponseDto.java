@@ -1,5 +1,8 @@
 package com.example.dto;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class BookResponseDto {
 
     private String bookId;
@@ -16,19 +19,19 @@ public class BookResponseDto {
         this.language = language;
     }
 
-    private String getBookId() {
+    public String getBookId() {
         return bookId;
     }
-    private String getTitle() {
+    public String getTitle() {
         return title;
     }  
-    private Double getPrice() {
+    public Double getPrice() {
         return price;
     }
-    private Boolean getAvailability() {
+    public Boolean getAvailability() {
         return availability;
     }
-    private String getLanguage() {
+    public String getLanguage() {
         return language;
     }
 

@@ -47,8 +47,14 @@ public class BookService {
    public List<Book> findall(){
         return bookRepository.findAll();
    }
-   public Optional<Book> findById(String BookId){
-        return bookRepository.findById(BookId);
+   public Optional<BookResponseDto> findById(String BookId){
+        return bookRepository.findById(BookId).map(book -> new BookResponseDto(
+            book.getBookId(),
+            book.getTitle(),
+            book.getPrice(),
+            book.getAvailability(),
+            book.getLanguage()
+        ));
    }
 
    public void deleteById(String BookId){
