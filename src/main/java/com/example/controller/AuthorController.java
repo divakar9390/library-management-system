@@ -9,34 +9,41 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.model.Author;
+import com.example.dto.request.AuthorRequestDto;
+import com.example.dto.response.AuthorResponseDto;
 import com.example.service.AuthorService;
 
 @RestController
 public class AuthorController {
     private final AuthorService authorService;
+   
 
     public AuthorController(AuthorService authorService) {
         this.authorService = authorService;
+     
     }
     
     @PostMapping("/authors/save")
-    public Author createAuthor(@RequestBody Author author){
+    public AuthorResponseDto createAuthor(@RequestBody AuthorRequestDto author){
         return authorService.save(author);
     }
     @PostMapping("/authors/saveAll")
-    public List<Author> createAuthors(@RequestBody List<Author> authors){
+    public List<AuthorResponseDto> createAuthors(@RequestBody List<AuthorRequestDto> authors){
         return authorService.saveAll(authors);
     }
 
     @GetMapping("/authors")
-    public List<Author> findallAuthors(){
+    public List<AuthorResponseDto> findallAuthors(){
         return authorService.findall();
     }
 
     @GetMapping("/authors/{id}")
-    public Optional<Author> findAuthorById(@PathVariable String id){
+    public Optional<AuthorResponseDto> findAuthorById(@PathVariable String id){
         return authorService.findById(id);
+    }
+    @GetMapping("/authors/name/{name}")
+    public Optional<AuthorResponseDto> findAuthorByName(@PathVariable String name){
+        return authorService.findByName(name);
     }
 
     @DeleteMapping("/authors/{id}")

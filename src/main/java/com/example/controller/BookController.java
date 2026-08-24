@@ -9,41 +9,45 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.dto.BookResponseDto;
-import com.example.model.Book;
+import com.example.dto.request.BookRequestDto;
+import com.example.dto.response.BookResponseDto;
 import com.example.service.BookService;
 
 
 @RestController
 public class BookController {
     public final BookService bookService;
-    private final BookResponseDto bookResponseDto;
-
-    public BookController(BookService bookService, BookResponseDto bookResponseDto) {
+   
+    public BookController(BookService bookService) {
         this.bookService = bookService;
-        this.bookResponseDto = bookResponseDto;
+       
     }
 
     @PostMapping("/books/save")
-    public Book saveBook(@RequestBody Book book){
+    public BookResponseDto saveBook(@RequestBody BookRequestDto book){
         return bookService.save(book);
     }
     @PostMapping("/books/saveAll")
-    public List<Book> saveAllBooks(@RequestBody List<Book> books){
+    public List<BookResponseDto> saveAllBooks(@RequestBody List<BookRequestDto> books){
         return bookService.saveAll(books);
     }
 
     @GetMapping("/books")
-    public List<Book> findall(){
+    public List<BookResponseDto> findall(){
         return bookService.findall();
     }
     @GetMapping("/books/{id}")
     public Optional<BookResponseDto> findById(@PathVariable String id){
         return bookService.findById(id);
     }
+    @GetMapping("/books/title/{title}")
+    public Optional<BookResponseDto> findByTitle(@PathVariable String title){
+        return bookService.findByTitle(title);
+    }
 
     @DeleteMapping("/books/{id}")
     public void deleteById(@PathVariable String id){
         bookService.deleteById(id);
     }
+    
 }
