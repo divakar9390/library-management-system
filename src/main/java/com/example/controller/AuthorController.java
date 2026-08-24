@@ -1,6 +1,5 @@
 package com.example.controller;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,8 @@ import com.example.dto.request.AuthorRequestDto;
 import com.example.dto.response.AuthorResponseDto;
 import com.example.service.AuthorService;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class AuthorController {
     private final AuthorService authorService;
@@ -24,11 +25,11 @@ public class AuthorController {
     }
     
     @PostMapping("/authors/save")
-    public AuthorResponseDto createAuthor(@RequestBody AuthorRequestDto author){
+    public AuthorResponseDto createAuthor(@Valid @RequestBody AuthorRequestDto author){
         return authorService.save(author);
     }
     @PostMapping("/authors/saveAll")
-    public List<AuthorResponseDto> createAuthors(@RequestBody List<AuthorRequestDto> authors){
+    public List<AuthorResponseDto> createAuthors(@Valid @RequestBody List<AuthorRequestDto> authors){
         return authorService.saveAll(authors);
     }
 
@@ -38,11 +39,11 @@ public class AuthorController {
     }
 
     @GetMapping("/authors/{id}")
-    public Optional<AuthorResponseDto> findAuthorById(@PathVariable String id){
+    public AuthorResponseDto findAuthorById(@PathVariable String id){
         return authorService.findById(id);
     }
     @GetMapping("/authors/name/{name}")
-    public Optional<AuthorResponseDto> findAuthorByName(@PathVariable String name){
+    public AuthorResponseDto findAuthorByName(@PathVariable String name){
         return authorService.findByName(name);
     }
 

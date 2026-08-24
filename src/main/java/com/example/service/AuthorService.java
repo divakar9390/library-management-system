@@ -1,12 +1,12 @@
 package com.example.service;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.example.dto.request.AuthorRequestDto;
 import com.example.dto.response.AuthorResponseDto;
+import com.example.exception.ResourcesNotFoundException;
 import com.example.model.Author;
 import com.example.repository.AuthorRepository;
 import com.example.util.IDGenerator;
@@ -29,7 +29,7 @@ public class AuthorService {
         author.setName(request.getName());
         author.setEmail(request.getEmail());
         author.setNationality(request.getNationality());
-        author.setPhoneNumber(request.getPhnoneNumber());
+        author.setPhoneNumber(request.getPhoneNumber());
         author.setDateOfBirth(request.getDateOfBirth());}
 
         String authorId;
@@ -76,25 +76,40 @@ public class AuthorService {
         )).collect(Collectors.toList());
     }
     
-    public Optional<AuthorResponseDto> findById(String id){
-        return authorRepository.findById(id).map(Author->new AuthorResponseDto(
-            Author.getAuthorId(),
-            Author.getName(),
-            Author.getEmail(),
-            Author.getNationality()
-            
-        ));
+    public AuthorResponseDto findById(String id) {
+
+        Author author = authorRepository.findById(id)
+                .orElseThrow(() -> 
+                    new ResourcesNotFoundException(
+                        "Author with Id not found: " + id
+                    )
+                );
+
+        return new AuthorResponseDto(
+                author.getAuthorId(),
+                author.getName(),
+                author.getEmail(),
+                author.getNationality()
+        );
     }
-    public Optional<AuthorResponseDto> findByName(String name){
-        return authorRepository.findByName(name).map(Author -> new AuthorResponseDto(
-            Author.getAuthorId(),
-            Author.getName(),
-            Author.getEmail(),
-            Author.getNationality()
-        ));
+    public AuthorResponseDto findByName(String name){
+        Author author = authorRepository.findByName(name); 
+        if(author == null){
+            throw new ResourcesNotFoundException("author with name not found!"+name);
+        }
+        return new AuthorResponseDto(
+            author.getAuthorId(),
+            author.getName(),
+            author.getEmail(),
+            author.getNationality()
+        );
     }
     public List<AuthorResponseDto> findall(){
-        return authorRepository.findAll().stream().map(author -> new AuthorResponseDto(
+        List<Author> authors = authorRepository.findAll();
+        if(authors.isEmpty()){
+            throw new ResourcesNotFoundException("Authors Not found");
+        }
+        return authors.stream().map(author -> new AuthorResponseDto(
             author.getAuthorId(),
             author.getName(),
             author.getEmail(),

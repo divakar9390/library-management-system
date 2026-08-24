@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.dto.request.BookRequestDto;
 import com.example.dto.response.BookResponseDto;
+import com.example.exception.DuplicateResourcesException;
+import com.example.exception.ResourcesNotFoundException;
 import com.example.model.Author;
 import com.example.model.Book;
 import com.example.repository.AuthorRepository;
@@ -29,6 +31,11 @@ public class BookService {
     }
 
    public BookResponseDto save(BookRequestDto request){
+      if (bookRepository.existsByIsbn(request.getIsbn())) {
+            throw new DuplicateResourcesException(
+            "Book already exists with ISBN: " + request.getIsbn()
+             );
+       }
       Author author = authorRepository.findById(request.getAuthorId())
         .orElseThrow(() -> new RuntimeException("Author not found"));
 
@@ -48,8 +55,9 @@ public class BookService {
           bookId = idGenerator.generatorBookId();
           } while (bookRepository.existsById(bookId));
 
-          book.setBookId(bookId);
+        book.setBookId(bookId);
         Book savedBook = bookRepository.save(book);
+        
         return new BookResponseDto(
             savedBook.getBookId(),
             savedBook.getTitle(),
@@ -62,6 +70,11 @@ public class BookService {
 
     List<Book> books = requests.stream()
             .map(request -> {
+                if (bookRepository.existsByIsbn(request.getIsbn())) {
+                       throw new DuplicateResourcesException(
+                     "Book already exists with ISBN: " + request.getIsbn()
+                    );
+                }
 
                 Author author = authorRepository.findById(request.getAuthorId())
                         .orElseThrow(() -> new RuntimeException("Author not found"));
@@ -105,31 +118,43 @@ public class BookService {
     
 
    public List<BookResponseDto> findall(){
-        return bookRepository.findAll().stream().map(book->new BookResponseDto(
+        List<Book> books = bookRepository.findAll();
+        if(books.isEmpty()){
+            throw new ResourcesNotFoundException("Not found"); 
+        }
+        
+        return books.stream().map(book->new BookResponseDto(
             book.getBookId(),
             book.getTitle(),
             book.getPrice(),
             book.getAvailability(),
             book.getLanguage()
         )).collect(Collectors.toList());
+        
    }
-   public Optional<BookResponseDto> findById(String BookId){
-        return bookRepository.findById(BookId).map(book -> new BookResponseDto(
+   
+   public BookResponseDto findById(String BookId){
+        Book book = bookRepository.findById(BookId).orElseThrow(()->new ResourcesNotFoundException("Book with Id not found: " + BookId));
+        return new BookResponseDto(
             book.getBookId(),
             book.getTitle(),
             book.getPrice(),
             book.getAvailability(),
             book.getLanguage()
-        ));
-   }
-   public Optional<BookResponseDto> findByTitle(String title){
-        return bookRepository.findByTitle(title).map(book -> new BookResponseDto(
+        );
+    }
+   public BookResponseDto  findByTitle(String title){
+        Book book = bookRepository.findByTitle(title);
+        if(book == null){
+            throw new ResourcesNotFoundException("Book with Title Not found! "+title);
+        }
+        return new BookResponseDto(
             book.getBookId(),
             book.getTitle(),
             book.getPrice(),
             book.getAvailability(),
             book.getLanguage()
-        ));
+        );
    }
 
    public void deleteById(String BookId){

@@ -1,6 +1,5 @@
 package com.example.controller;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +12,8 @@ import com.example.dto.request.BookRequestDto;
 import com.example.dto.response.BookResponseDto;
 import com.example.service.BookService;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 public class BookController {
@@ -24,11 +25,11 @@ public class BookController {
     }
 
     @PostMapping("/books/save")
-    public BookResponseDto saveBook(@RequestBody BookRequestDto book){
+    public BookResponseDto saveBook(@Valid @RequestBody BookRequestDto book){
         return bookService.save(book);
     }
     @PostMapping("/books/saveAll")
-    public List<BookResponseDto> saveAllBooks(@RequestBody List<BookRequestDto> books){
+    public List<BookResponseDto> saveAllBooks(@Valid @RequestBody List<BookRequestDto> books){
         return bookService.saveAll(books);
     }
 
@@ -37,11 +38,11 @@ public class BookController {
         return bookService.findall();
     }
     @GetMapping("/books/{id}")
-    public Optional<BookResponseDto> findById(@PathVariable String id){
+    public BookResponseDto findById(@PathVariable String id){
         return bookService.findById(id);
     }
     @GetMapping("/books/title/{title}")
-    public Optional<BookResponseDto> findByTitle(@PathVariable String title){
+    public BookResponseDto findByTitle(@PathVariable String title){
         return bookService.findByTitle(title);
     }
 
