@@ -14,6 +14,8 @@ import com.example.model.Book;
 import com.example.repository.AuthorRepository;
 import com.example.repository.BookRePository;
 import com.example.util.IDGenerator;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 @Service
@@ -117,19 +119,19 @@ public class BookService {
 
     
 
-   public List<BookResponseDto> findall(){
-        List<Book> books = bookRepository.findAll();
+   public Page<BookResponseDto> findall(Pageable pageable){
+        Page<Book> books = bookRepository.findAll(pageable);
         if(books.isEmpty()){
             throw new ResourcesNotFoundException("Not found"); 
         }
         
-        return books.stream().map(book->new BookResponseDto(
+        return books.map(book->new BookResponseDto(
             book.getBookId(),
             book.getTitle(),
             book.getPrice(),
             book.getAvailability(),
             book.getLanguage()
-        )).collect(Collectors.toList());
+        ));
         
    }
    
@@ -156,8 +158,28 @@ public class BookService {
             book.getLanguage()
         );
    }
+   public BookResponseDto findByIsbn(String isbn){
+    Book book = bookRepository.findByIsbn(isbn);
+    if(book==null){
+        throw new ResourcesNotFoundException("Book with isbn Not found! : "+isbn);
+    }
+
+    return new BookResponseDto(
+        book.getTitle(),
+        book.getTitle(),
+        book.getPrice(),
+        book.getAvailability(),
+        book.getLanguage()
+
+    );
+   }
 
    public void deleteById(String BookId){
+        
+       if(!bookRepository.existsById(BookId)){
+        throw new ResourcesNotFoundException("Book with Id Not Found" +BookId);
+        
+       }
         bookRepository.deleteById(BookId);
    }
 }

@@ -12,6 +12,10 @@ import com.example.dto.request.BookRequestDto;
 import com.example.dto.response.BookResponseDto;
 import com.example.service.BookService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
 import jakarta.validation.Valid;
 
 
@@ -34,8 +38,8 @@ public class BookController {
     }
 
     @GetMapping("/books")
-    public List<BookResponseDto> findall(){
-        return bookService.findall();
+    public Page<BookResponseDto> findall(Pageable pageable){
+        return bookService.findall(pageable);
     }
     @GetMapping("/books/{id}")
     public BookResponseDto findById(@PathVariable String id){
@@ -44,6 +48,10 @@ public class BookController {
     @GetMapping("/books/title/{title}")
     public BookResponseDto findByTitle(@PathVariable String title){
         return bookService.findByTitle(title);
+    }
+   @GetMapping("books/isbn/{isbn}")
+    public BookResponseDto findByIsbn(@PathVariable String isbn){
+        return bookService.findByIsbn(isbn);
     }
 
     @DeleteMapping("/books/{id}")

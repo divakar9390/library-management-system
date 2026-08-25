@@ -4,6 +4,7 @@ package com.example.exception;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -68,6 +69,20 @@ public class GobalExceptionhandler  {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(error);
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> handlerInternalServer(Exception ex , WebRequest request){
+                ErrorResponse error = new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "Internal Server Error",
+                        "An Unexpected Error Occured",
+                        request.getDescription(false).replace("uri=",""));
+
+                 return ResponseEntity
+                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                     .body(error);
         }
     
 }

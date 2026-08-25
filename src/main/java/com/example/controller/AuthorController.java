@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.example.dto.request.AuthorRequestDto;
 import com.example.dto.response.AuthorResponseDto;
@@ -34,8 +36,8 @@ public class AuthorController {
     }
 
     @GetMapping("/authors")
-    public List<AuthorResponseDto> findallAuthors(){
-        return authorService.findall();
+    public Page<AuthorResponseDto> findallAuthors(Pageable pageable){
+        return authorService.findall(pageable);
     }
 
     @GetMapping("/authors/{id}")
