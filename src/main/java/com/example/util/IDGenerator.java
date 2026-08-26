@@ -25,4 +25,10 @@ public class IDGenerator {
         return userId;
     }
     
+    public static String generatorLoanId(){
+        int n = ThreadLocalRandom.current().nextInt(1000,9999);
+        String userId = "Ln" + n;
+        return userId;
+
+    }
 }

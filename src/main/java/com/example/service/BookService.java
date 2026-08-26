@@ -12,7 +12,7 @@ import com.example.exception.ResourcesNotFoundException;
 import com.example.model.Author;
 import com.example.model.Book;
 import com.example.repository.AuthorRepository;
-import com.example.repository.BookRePository;
+import com.example.repository.BookRepository;
 import com.example.util.IDGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +21,12 @@ import org.springframework.data.domain.Pageable;
 @Service
 public class BookService {
 
-   public final BookRePository bookRepository;
+   public final BookRepository bookRepository;
    public IDGenerator idGenerator;
    public final AuthorRepository authorRepository;
    
 
-   BookService(BookRePository bookRepository, IDGenerator idGenerator, AuthorRepository authorRepository){
+   BookService(BookRepository bookRepository, IDGenerator idGenerator, AuthorRepository authorRepository){
       this.idGenerator = idGenerator;
       this.bookRepository = bookRepository;
       this.authorRepository = authorRepository;

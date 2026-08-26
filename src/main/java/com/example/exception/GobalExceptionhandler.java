@@ -84,5 +84,20 @@ public class GobalExceptionhandler  {
                      .status(HttpStatus.INTERNAL_SERVER_ERROR)
                      .body(error);
         }
-    
+        
+        @ExceptionHandler(BussinessRuleException.class)
+        public ResponseEntity<ErrorResponse> handlerBussinessRule(BussinessRuleException ex,WebRequest request){
+                    ErrorResponse error = new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
+                        ex.getMessage(),
+                        request.getDescription(false).replace("uri=",""));
+
+                return ResponseEntity
+                     .status(HttpStatus.CONFLICT)
+                     .body(error);
+
+                    
+        }
 }
