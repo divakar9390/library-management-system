@@ -82,15 +82,13 @@ public class LoanService {
         Loan savedLoan = loanRepository.save(loan);
 
         return new LoanResponseDto(savedLoan.getLoanId(), request.getUserId(), user.getName(), request.getBookId(), book.getTitle(), savedLoan.getBorrowedDate(), savedLoan.getDueDate(), savedLoan.getReturnedDate(), savedLoan.getStatus());
-
-
-
         
-
-
-
-        
-
+    }
+    public void deleteById(String LoanId){
+        if(!loanRepository.existsById(LoanId)){
+            throw new ResourcesNotFoundException("Loan Not found "+LoanId);
+        }
+        loanRepository.deleteById(LoanId);
     }
 
 
