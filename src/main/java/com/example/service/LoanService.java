@@ -1,14 +1,17 @@
 package com.example.service;
 
 import java.time.LocalDate;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.example.dto.request.LoanRequestDto;
 import com.example.dto.response.LoanResponseDto;
-import com.example.exception.ResourcesNotFoundException;
 import com.example.exception.BussinessRuleException;
+import com.example.exception.ResourcesNotFoundException;
 import com.example.model.Book;
 import com.example.model.Loan;
 import com.example.model.User;
@@ -84,6 +87,107 @@ public class LoanService {
         return new LoanResponseDto(savedLoan.getLoanId(), request.getUserId(), user.getName(), request.getBookId(), book.getTitle(), savedLoan.getBorrowedDate(), savedLoan.getDueDate(), savedLoan.getReturnedDate(), savedLoan.getStatus());
         
     }
+    public LoanResponseDto returnedBook(String LoanId){
+        Loan loan = loanRepository.findById(LoanId).orElseThrow(()->new ResourcesNotFoundException("Loan Not Found  "+LoanId));
+        if(!loan.getStatus().equalsIgnoreCase("BORROWED")){
+            throw new BussinessRuleException("Book is Not Borrowed"+loan.getStatus());
+        }
+        Book book = loan.getBook();
+        
+
+        loan.setReturnedDate(LocalDate.now());
+        loan.setStatus("RETURNED");
+        book.setAvailability(true);
+        bookRepository.save(book);
+        Loan savedLoan = loanRepository.save(loan);
+        return new LoanResponseDto(
+            savedLoan.getLoanId(),
+            savedLoan.getUser().getUserId(),
+            savedLoan.getUser().getName(),
+            savedLoan.getBook().getBookId(),
+            savedLoan.getBook().getTitle(),
+            savedLoan.getBorrowedDate(),
+            savedLoan.getDueDate(),
+            savedLoan.getReturnedDate(),
+            savedLoan.getStatus()
+        );
+
+    } 
+    public Page<LoanResponseDto> findall(Pageable pageable){
+        Page<Loan> loans = loanRepository.findAll(pageable);
+        if(loans.isEmpty()){
+            throw new ResourcesNotFoundException("No Actice Loans");
+        }
+        return loans.map(loan->new LoanResponseDto(
+                loan.getLoanId(),
+                loan.getUser().getUserId(),
+                loan.getUser().getName(),
+                loan.getBook().getBookId(),
+                loan.getBook().getTitle(),
+                loan.getBorrowedDate(),
+                loan.getDueDate(),
+                loan.getReturnedDate(),
+                loan.getStatus()
+        ));
+
+    }   
+
+    public LoanResponseDto findById(String LoanId){
+        Loan loan = loanRepository.findById(LoanId).orElseThrow(()-> new ResourcesNotFoundException("Loan Not Found With Id "+LoanId));
+        return new LoanResponseDto(
+            loan.getLoanId(),
+            loan.getUser().getUserId(),
+            loan.getUser().getName(),
+            loan.getBook().getBookId(),
+            loan.getBook().getTitle(),
+            loan.getBorrowedDate(),
+            loan.getDueDate(),
+            loan.getReturnedDate(),
+            loan.getStatus()
+
+        );
+
+    }
+
+    public List<LoanResponseDto> userLoansByStatus(String userId,String status){
+        List<Loan> loans =loanRepository.findByUserUserIdAndStatus(userId,status);
+
+        if(loans.isEmpty()){
+             throw new ResourcesNotFoundException("User has No Active Loans ");
+        }
+         return loans.stream().map(loan->new LoanResponseDto(
+                loan.getLoanId(),
+                loan.getUser().getUserId(),
+                loan.getUser().getName(),
+                loan.getBook().getBookId(),
+                loan.getBook().getTitle(),
+                loan.getBorrowedDate(),
+                loan.getDueDate(),
+                loan.getReturnedDate(),
+                loan.getStatus()
+        )).collect(Collectors.toList());
+
+
+    }
+    public List<LoanResponseDto>  userAllLoans(String userId){
+        List<Loan> loans = loanRepository.findByUserUserId(userId);
+        if(loans.isEmpty()){
+             throw new ResourcesNotFoundException("User has No Active Loans ");
+        }
+         return loans.stream().map(loan->new LoanResponseDto(
+                loan.getLoanId(),
+                loan.getUser().getUserId(),
+                loan.getUser().getName(),
+                loan.getBook().getBookId(),
+                loan.getBook().getTitle(),
+                loan.getBorrowedDate(),
+                loan.getDueDate(),
+                loan.getReturnedDate(),
+                loan.getStatus()
+        )).collect(Collectors.toList());
+
+    }
+
     public void deleteById(String LoanId){
         if(!loanRepository.existsById(LoanId)){
             throw new ResourcesNotFoundException("Loan Not found "+LoanId);
