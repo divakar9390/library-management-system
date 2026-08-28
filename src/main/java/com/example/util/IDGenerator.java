@@ -27,7 +27,7 @@ public class IDGenerator {
     
     public static String generatorLoanId(){
         int n = ThreadLocalRandom.current().nextInt(1000,9999);
-        String userId = "Ln" + n;
+        String userId = "LN" + n;
         return userId;
 
     }

@@ -3,12 +3,14 @@ package com.example.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.dto.request.LoanRequestDto;
+import com.example.dto.request.LoanreturnRequestDto;
 import com.example.dto.response.LoanResponseDto;
 import com.example.exception.BussinessRuleException;
 import com.example.exception.ResourcesNotFoundException;
@@ -87,8 +89,8 @@ public class LoanService {
         return new LoanResponseDto(savedLoan.getLoanId(), request.getUserId(), user.getName(), request.getBookId(), book.getTitle(), savedLoan.getBorrowedDate(), savedLoan.getDueDate(), savedLoan.getReturnedDate(), savedLoan.getStatus());
         
     }
-    public LoanResponseDto returnedBook(String LoanId){
-        Loan loan = loanRepository.findById(LoanId).orElseThrow(()->new ResourcesNotFoundException("Loan Not Found  "+LoanId));
+    public LoanResponseDto returnedBook(LoanreturnRequestDto request){
+        Loan loan = loanRepository.findById(request.getLoanId()).orElseThrow(()->new ResourcesNotFoundException("Loan Not Found  "+request.getLoanId()));
         if(!loan.getStatus().equalsIgnoreCase("BORROWED")){
             throw new BussinessRuleException("Book is Not Borrowed"+loan.getStatus());
         }
@@ -188,11 +190,11 @@ public class LoanService {
 
     }
 
-    public void deleteById(String LoanId){
-        if(!loanRepository.existsById(LoanId)){
-            throw new ResourcesNotFoundException("Loan Not found "+LoanId);
+    public void deleteById(String loanId){
+        if(!loanRepository.existsById(loanId)){
+            throw new ResourcesNotFoundException("Loan Not found "+loanId);
         }
-        loanRepository.deleteById(LoanId);
+        loanRepository.deleteById(loanId);
     }
 
 
