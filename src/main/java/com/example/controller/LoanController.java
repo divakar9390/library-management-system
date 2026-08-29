@@ -47,6 +47,10 @@ public class LoanController {
     public List<LoanResponseDto> findAllLoansByStatus(@PathVariable String userId,@PathVariable String status){
         return loanService.userLoansByStatus(userId,status);
     }
+    @GetMapping("loans/overdue")
+    public  List<LoanResponseDto> findOverDueLoans(){
+        return loanService.findOverDueLoans();
+    }
 
     @DeleteMapping("loans/delete/{loanId}")
     public void  delete(@PathVariable String loanId){
