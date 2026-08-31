@@ -190,15 +190,14 @@ public class LoanService {
 
     }
     public List<LoanResponseDto> findOverDueLoans(){
+        
         List<Loan> loans = loanRepository.findByStatus("BORROWED");
-        LocalDate Today = LocalDate.now();
-        if(loans.isEmpty()){
-            throw new ResourcesNotFoundException("No OverDue Loans ");
-        }
+        LocalDate today = LocalDate.now();
+       
 
-       return loans.stream()
+       List<LoanResponseDto> overdueLoans = loans.stream()
             .filter(loan ->
-                    loan.getDueDate().isBefore(Today)
+                    loan.getDueDate().isBefore(today)
             )
             .map(loan -> new LoanResponseDto(
                     loan.getLoanId(),
@@ -211,9 +210,14 @@ public class LoanService {
                     loan.getReturnedDate(),
                     loan.getStatus()
             )).collect(Collectors.toList());
+
+             if(overdueLoans.isEmpty()){
+            throw new ResourcesNotFoundException("No OverDue Loans ");
+        }
+        return overdueLoans;
         
     }
-
+   
     public void deleteById(String loanId){
         if(!loanRepository.existsById(loanId)){
             throw new ResourcesNotFoundException("Loan Not found "+loanId);
